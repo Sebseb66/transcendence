@@ -1,0 +1,50 @@
+<!-- templates/game/game.html -->
+
+{% extends 'home.html' %}
+{% load partials %}
+{% partialdef my_htmx_content inline %}
+{% load static %}
+
+{% block styles %}
+{% endblock %}
+
+{% block script_body %}
+<script>document.title = 'Game'</script>
+<script>
+     user = '{{ user.username|escapejs }}';
+     party_id = '{{ party_id|escapejs }}';
+     num_players = '{{ num_players|escapejs }}';
+     match_id = "{{ match_id|default_if_none:'' }}";
+     tournament_id = "{{ tournament_id|default_if_none:'' }}";
+</script>
+{% endblock %}
+
+
+{% block body %}
+	<div id="waiting-room">
+	    <p>Waiting for another player ({{ num_players|escapejs }} max) to join ({{ party_id|escapejs }})...</p>
+	</div>
+<script>
+/* alert("num_players="+num_players); */
+</script>
+
+<div id="game-container">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div id="gameover-message" style="display: none;">
+            <p id="gameover-text"></p>
+            <p id="redirect-text"></p>
+        </div>
+</div>
+{% if num_players == 0 %}
+    <!-- alert("PLAYING Local"); -->
+    <script src="{% static 'pongLocal.js' %}" defer="false"/>
+{% elif num_players == 1 %}
+    <!-- alert("PLAYING WITH AI"); -->
+    <script src="{% static 'pongIA.js' %}" defer="false"/>
+{% elif num_players == 2 %}
+    <!-- alert("PLAYING WITH AI"); -->
+    <script src="{% static 'pong.js' %}" defer="false"/>
+{% else %}
+{% endif %}
+{% endblock %}
+{% endpartialdef %}

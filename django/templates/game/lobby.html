@@ -1,0 +1,59 @@
+{% extends 'home.html' %}
+{% load partials %}
+{% partialdef my_htmx_content inline %}
+{% load static %}
+
+{% block script_body %}<script>document.title = 'Lobby'</script>{% endblock %}
+<!-- lobby.html -->
+{% block body %}
+<div class="lobby-menu">
+    <h3>Lobby menu</h3>
+</div>
+<div>
+    <form hx-target="#app-root" hx-post="{% url 'game:lobby' %}" hx-boost="false">
+		{% csrf_token %}
+		
+		<label for="num_players">Select the number of players:</label>
+		<select id="num_players" name="num_players">
+			<option value="2">2 Players</option>
+			<option value="0">Play Local</option>
+			<option value="1">Play with AI</option>
+			<!-- <option value="3">3 Players</option> -->
+		</select>
+		
+		<button id="create-party-button" type="submit">Create Party</button>
+	</form>
+</div>
+<div class="mt-5">
+    <table>
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Current Players</th>
+                <th scope="col">Number of Players</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for party in parties %}
+                {% if party.status == 'active' %}
+                    <tr>
+                        <th scope="row">{{ party.id }}</th>
+                        <td>{{ party.nbPlayer }}</td>
+                        <td>{{ party.num_players }}</td>
+                        <td><a  hx-target="#app-root" hx-get="{% url 'game:game' party.id %}" href="{% url 'game:game' party.id %}">JOIN</a></td>
+                    </tr>
+                {% elif party.status == 'in_progress' %}
+                    <tr>
+                        <th scope="row">{{ party.id }}</th>
+                        <td>{{ party.nbPlayer }}</td>
+                        <td>{{ party.num_players }}</td>
+                        <td></td>
+                    </tr>    
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock body%}
+{% endpartialdef %}
